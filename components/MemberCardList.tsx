@@ -1,4 +1,4 @@
-import { Control, useFieldArray, Path, FieldValues, ArrayPath, FieldErrors } from 'react-hook-form';
+import { Control, useFieldArray, Path, FieldValues, ArrayPath, FieldErrors, UseFormWatch } from 'react-hook-form';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { X, Plus } from "lucide-react";
@@ -15,6 +15,7 @@ interface MemberCardListProps<T extends FieldValues> {
   label?: string;
   roleType?: string;
   errors?: FieldErrors<T>;
+  watch?: UseFormWatch<T>;
 }
 
 export function MemberCardList<T extends FieldValues>({
@@ -23,6 +24,7 @@ export function MemberCardList<T extends FieldValues>({
   label = "Members",
   roleType = "",
   errors,
+  watch,
 }: MemberCardListProps<T>) {
   const { fields, append, remove } = useFieldArray({
     control,
