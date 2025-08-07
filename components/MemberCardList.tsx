@@ -1,8 +1,8 @@
-import { Control, useFieldArray, Path, FieldValues, ArrayPath } from 'react-hook-form';
-import { Input } from "@/components/ui/input";
+import { Control, useFieldArray, Path, FieldValues, ArrayPath, FieldErrors } from 'react-hook-form';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { X, Plus } from "lucide-react";
+import { InputField } from "@/components/shared/Form/InputField";
 
 // Define the structure that array items should have
 interface MemberItem {
@@ -14,6 +14,7 @@ interface MemberCardListProps<T extends FieldValues> {
   name: ArrayPath<T>;
   label?: string;
   roleType?: string;
+  errors?: FieldErrors<T>;
 }
 
 export function MemberCardList<T extends FieldValues>({
@@ -21,6 +22,7 @@ export function MemberCardList<T extends FieldValues>({
   name,
   label = "Members",
   roleType = "",
+  errors,
 }: MemberCardListProps<T>) {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -41,11 +43,16 @@ export function MemberCardList<T extends FieldValues>({
       </div>
       {fields.map((field, index) => (
         <Card key={field.id} className="p-4 flex items-center gap-2">
-          <Input
-            {...control.register(`${name}.${index}.name` as Path<T>)}
-            placeholder={`ชื่อ${roleType || 'สมาชิก'}`}
-            className="flex-1"
-          />
+          <div className="flex-1">
+            <InputField
+              control={control}
+              name={`${name}.${index}.name` as Path<T>}
+              label={`ชื่อ${roleType || 'สมาชิก'}`}
+              placeholder={`ชื่อ${roleType || 'สมาชิก'}`}
+              errors={errors}
+              hideLabel
+            />
+          </div>
           <Button type="button" variant="ghost" onClick={() => remove(index)}>
             <X className="w-5 h-5 text-destructive" />
           </Button>
