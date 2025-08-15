@@ -1,14 +1,25 @@
 "use client";
 
 import { useEffect } from "react";
-import { useFieldArray, FieldValues, FieldPath } from "react-hook-form";
+import { useFieldArray, FieldValues, Control, FieldErrors } from "react-hook-form";
 import { X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DynamicStringListProps } from "./DynamicStringList.types";
 
-export function DynamicStringList<T extends FieldValues>({
+interface FlexibleDynamicStringListProps<T extends FieldValues> {
+  label: string;
+  control: Control<T>;
+  name: string; // More flexible - accepts any string
+  errors?: FieldErrors<T>;
+  placeholder?: string;
+  minItemCount?: number;
+  maxItemCount?: number;
+  addButtonText?: string;
+  className?: string;
+}
+
+export function FlexibleDynamicStringList<T extends FieldValues>({
   label,
   control,
   name,
@@ -18,10 +29,10 @@ export function DynamicStringList<T extends FieldValues>({
   maxItemCount,
   addButtonText = "เพิ่มรายการ",
   className = "",
-}: DynamicStringListProps<T>) {
+}: FlexibleDynamicStringListProps<T>) {
   const { fields, append, remove, replace } = useFieldArray({
     control,
-    name,
+    name: name as any,
   });
 
   const handleAddItem = () => {
@@ -72,7 +83,7 @@ export function DynamicStringList<T extends FieldValues>({
             <div className="flex-1">
               <div className="relative">
                 <Input
-                  {...control.register(`${name}.${index}` as FieldPath<T>)}
+                  {...control.register(`${name}.${index}` as any)}
                   placeholder={`${placeholder} ${index + 1}`}
                   className={`pr-10 ${
                     getFieldError(index) ? "border-destructive" : ""

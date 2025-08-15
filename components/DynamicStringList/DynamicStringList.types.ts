@@ -1,9 +1,9 @@
-import { Control, FieldValues, Path, FieldErrors } from "react-hook-form";
+import { Control, FieldValues, FieldPath, FieldErrors } from "react-hook-form";
 
 export interface DynamicStringListProps<T extends FieldValues> {
   label: string;
   control: Control<T>;
-  name: Path<T>;
+  name: FieldPath<T>;
   errors?: FieldErrors<T>;
   placeholder?: string;
   minItemCount?: number;
