@@ -56,10 +56,32 @@ export function DynamicStringList<T extends FieldValues>({
     }
   }, [fields.length, minItemCount, replace]);
 
-  // Get field error
+  // Get field error - ปรับให้ทำงานถูกต้อง
   const getFieldError = (index: number) => {
-    const fieldPath = `${name}.${index}` as keyof typeof errors;
-    return errors?.[fieldPath];
+    // วิธีที่ 1: ใช้ nested object access
+    const nameStr = name as string;
+    const fieldErrors = errors?.[nameStr as keyof typeof errors] as any;
+    const error = fieldErrors?.[index];
+    
+    // วิธีที่ 2: ลองหา error ด้วย string path
+    if (!error) {
+      const fieldPath = `${nameStr}.${index}`;
+      const pathParts = fieldPath.split('.');
+      let currentError = errors as any;
+      
+      for (const part of pathParts) {
+        if (currentError && typeof currentError === 'object') {
+          currentError = currentError[part];
+        } else {
+          currentError = null;
+          break;
+        }
+      }
+      
+      return currentError;
+    }
+    
+    return error;
   };
 
   return (
@@ -72,6 +94,14 @@ export function DynamicStringList<T extends FieldValues>({
           </span>
         )}
       </div>
+      
+      {/* Debug: แสดง errors ทั้งหมด */}
+      {process.env.NODE_ENV === 'development' && errors && (
+        <div className="p-2 bg-red-50 text-xs">
+          <strong>Debug Errors:</strong>
+          <pre>{JSON.stringify(errors, null, 2)}</pre>
+        </div>
+      )}
       
       <div className="space-y-3">
         {fields.map((field, index) => (
@@ -108,11 +138,19 @@ export function DynamicStringList<T extends FieldValues>({
                   </Button>
                 )}
               </div>
-              {getFieldError(index) && (
-                <p className="text-sm text-destructive mt-1">
-                  {getFieldError(index)?.message as string}
-                </p>
-              )}
+              {(() => {
+                const fieldError = getFieldError(index);
+                // Debug: แสดงใน console
+                if (fieldError) {
+                  console.log(`Field error for ${name}.${index}:`, fieldError);
+                }
+                
+                return fieldError && (
+                  <p className="text-sm text-destructive mt-1">
+                    {fieldError?.message || fieldError}
+                  </p>
+                );
+              })()}
             </div>
             
             {/* Show index number */}
