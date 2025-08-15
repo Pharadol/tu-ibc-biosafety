@@ -18,6 +18,13 @@ export function DynamicStringList<T extends FieldValues>({
   maxItemCount,
   addButtonText = "เพิ่มรายการ",
   className = "",
+  isReadonly,
+  getValues,
+  trigger,
+  onValueUpdate,
+  required = true,
+  requiredMessage = "กรุณากรอกข้อมูล",
+  allowWhitespace = false,
 }: DynamicStringListProps<T>) {
   const { fields, append, remove, replace } = useFieldArray({
     control,
@@ -72,7 +79,18 @@ export function DynamicStringList<T extends FieldValues>({
             <div className="flex-1">
               <div className="relative">
                 <Input
-                  {...control.register(`${name}.${index}` as any)}
+                  {...control.register(`${name}.${index}` as any, {
+                    required: required ? requiredMessage : false,
+                    validate: (value) => {
+                      if (required && (!value || value.length === 0)) {
+                        return requiredMessage;
+                      }
+                      if (!allowWhitespace && value && value.trim().length === 0) {
+                        return "กรุณากรอกข้อมูล (ไม่อนุญาตให้ใช้เฉพาะช่องว่าง)";
+                      }
+                      return true;
+                    }
+                  })}
                   placeholder={`${placeholder} ${index + 1}`}
                   className={`pr-10 ${
                     getFieldError(index) ? "border-destructive" : ""
