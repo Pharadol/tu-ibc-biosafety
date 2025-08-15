@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useFieldArray, FieldValues, FieldPath } from "react-hook-form";
+import { useFieldArray, FieldValues } from "react-hook-form";
 import { X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ export function DynamicStringList<T extends FieldValues>({
 }: DynamicStringListProps<T>) {
   const { fields, append, remove, replace } = useFieldArray({
     control,
-    name,
+    name: name as any,
   });
 
   const handleAddItem = () => {
@@ -72,7 +72,7 @@ export function DynamicStringList<T extends FieldValues>({
             <div className="flex-1">
               <div className="relative">
                 <Input
-                  {...control.register(`${name}.${index}` as FieldPath<T>)}
+                  {...control.register(`${name}.${index}` as any)}
                   placeholder={`${placeholder} ${index + 1}`}
                   className={`pr-10 ${
                     getFieldError(index) ? "border-destructive" : ""
